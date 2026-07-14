@@ -24,11 +24,14 @@ if file_past and file_current:
     df_past = pd.read_csv(file_past)
     df_current = pd.read_csv(file_current)
     
-    # Очищення назв колонок від пробілів
+    # Очищення назв колонок від будь-яких пробілів (важливо!)
     df_past.columns = df_past.columns.str.strip()
     df_current.columns = df_current.columns.str.strip()
     
-    # Об'єднання за назвою міста
+    # Спільні колонки для злиття
+    merge_cols = ['Назва міста', 'Область']
+    
+    # Визначаємо, які ще колонки збігаються, щоб об'єднати їх з суфіксами
     df = pd.merge(
         df_current, 
         df_past, 
@@ -70,7 +73,7 @@ if file_past and file_current:
             
     df['Індикатор'] = df['Динаміка %'].apply(get_trend_indicator)
     
-    # Списки даних для таблиці
+    # Списки даних для таблиці (використовуємо очищені назви колонок)
     col_no = df['№'].tolist() + ['']
     col_city = df['Назва міста'].tolist() + ['Всього']
     col_of = df['Завантажено ОФ_current'].tolist() + [str(df['Завантажено ОФ_current'].eq('так').sum())]
@@ -78,7 +81,7 @@ if file_past and file_current:
     col_proc = [f"{x*100:.2f}%" for x in df['% Опрацьованих_current']] + [f"{avg_curr_processed*100:.2f}%"]
     col_verif = [f"{x*100:.2f}%" for x in df['% Верифікованих адрес_current']] + [f"{df['% Верифікованих адрес_current'].mean()*100:.2f}%"]
     col_count = [f"{int(x):,}".replace(",", " ") for x in df['Верифіковані_current']] + [f"{int(total_curr_verified):,}".replace(",", " ")]
-    col_ref = [f"{x*100:.2f}%" for x in df['% Уточнення _current']] + [f"{df['% Уточнення _current'].mean()*100:.2f}%"]
+    col_ref = [f"{x*100:.2f}%" for x in df['% Уточнення_current']] + [f"{df['% Уточнення_current'].mean()*100:.2f}%"]
     
     col_dyn_proc = [f"{x*100:+.2f}%" for x in df['Динаміка %']] + [f"{avg_diff_processed*100:+.2f}%"]
     col_indicator = df['Індикатор'].tolist() + ['']
