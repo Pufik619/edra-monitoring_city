@@ -197,7 +197,6 @@ styled = (
         'Динаміка (шт.)': '{:+,.0f}',
     })
     .background_gradient(subset=['% Опрацьованих'], cmap='Greens', vmin=0, vmax=1)
-    .applymap(color_dynamics, subset=['Динаміка %'])
     .apply(highlight_extremes, axis=1, subset=['№', 'Місто', 'Область', 'Завантажено ОФ'])
     .set_properties(**{'text-align': 'center'})
     .set_table_styles([
@@ -206,6 +205,9 @@ styled = (
         {'selector': 'td', 'props': [('padding', '6px')]},
     ])
 )
+
+map_fn = getattr(styled, 'map', None) or getattr(styled, 'applymap')
+styled = map_fn(color_dynamics, subset=['Динаміка %'])
 
 st.dataframe(styled, use_container_width=True, height=min(45 * total_rows + 40, 900))
 
