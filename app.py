@@ -177,6 +177,19 @@ def color_dynamics(v):
     return 'color: #B7791F; font-weight: 600;'
 
 
+def green_gradient(series):
+    """Ручний градієнт білий -> зелений (без залежності від matplotlib)."""
+    styles = []
+    for v in series:
+        ratio = max(0.0, min(1.0, v))  # значення вже 0..1
+        r = int(255 + (56 - 255) * ratio)
+        g = int(255 + (161 - 255) * ratio)
+        b = int(255 + (105 - 255) * ratio)
+        text_color = '#FFFFFF' if ratio > 0.6 else '#1A365D'
+        styles.append(f'background-color: rgb({r},{g},{b}); color: {text_color};')
+    return styles
+
+
 def highlight_extremes(row):
     styles = [''] * len(row)
     if row['№'] <= 3:
@@ -196,7 +209,7 @@ styled = (
         'Кількість верифікованих': '{:,.0f}',
         'Динаміка (шт.)': '{:+,.0f}',
     })
-    .background_gradient(subset=['% Опрацьованих'], cmap='Greens', vmin=0, vmax=1)
+    .apply(green_gradient, subset=['% Опрацьованих'])
     .apply(highlight_extremes, axis=1, subset=['№', 'Місто', 'Область', 'Завантажено ОФ'])
     .set_properties(**{'text-align': 'center'})
     .set_table_styles([
